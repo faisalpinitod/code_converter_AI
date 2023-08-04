@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Code Conversion, Debugging, and Quality Check Application</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.27.0/min/vs/editor/editor.main.min.css" />
+    <style>
+/* Default styles */
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #F8F8F8;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+#editor {
+    height: 400px;
+    border: 1px solid #DDD;
+}
+
+select {
+    padding: 8px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #F0F0F0;
+    color: #333;
+}
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #5409A4;
+    color: #FFF;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #42077B;
+}
+
+h2 {
+    color: #333;
+    font-size: 20px;
+    margin-top: 20px;
+}
+
+pre {
+    background-color: #F0F0F0;
+    padding: 10px;
+    border-radius: 4px;
+    color: #333;
+    font-size: 14px;
+}
+
+/* Media query for mobile screens */
+
+@media (max-width: 767px) {
+    .container {
+        padding: 10px;
+    }
+
+    #editor {
+        height: 300px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Application  </h1> <h3> for Code Conversion, Debugging, and Quality Check</h3>
+        <div id="editor"></div>
+        <div>
+            <select id="languageSelect">
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="javascript">JavaScript</option>
+            </select>
+        </div>
+        <div>
+            <button onclick="convertCode()">Convert</button>
+            <button onclick="debugCode()">Debug</button>
+            <button onclick="performQualityCheck()">Check Quality</button>
+        </div>
+        <div>
+            <h2>Output</h2>
+            <pre id="output"></pre>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.27.0/min/vs/loader.js"></script>
+    <script>
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.27.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            var editor = monaco.editor.create(document.getElementById('editor'), {
+                value: '// Write the code here\n',
+                language: 'javascript',
+                theme: 'vs-dark'
+            });
+
+            window.convertCode = function() {
+                var code = editor.getValue();
+                var languageSelect = document.getElementById('languageSelect');
+                var targetLanguage = languageSelect.options[languageSelect.selectedIndex].value;
+
+                // Make a request to the backend API for code conversion
+                fetch('https://code-wg14.onrender.com/convert', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code: code, language: targetLanguage })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    document.getElementById('output').textContent = data.message;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            };
+
+            window.debugCode = function() {
+                var code = editor.getValue();
+
+                // Make a request to the backend API for code debugging
+                fetch('https://code-wg14.onrender.com/debug', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code: code })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('output').textContent = data.message;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            };
+
+            window.performQualityCheck = function() {
+                var code = editor.getValue();
+
+                //Make a request to the backend API for code quality check
+                fetch('https://code-wg14.onrender.com/qualitycheck', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code: code })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('output').textContent = data.message;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            };
+        });
+    </script>
+</body>
+</html>
